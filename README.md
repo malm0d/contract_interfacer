@@ -1,0 +1,1 @@
+Just experimenting and tinkering with Rust. Dont treat as prod pls.
