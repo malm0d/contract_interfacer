@@ -33,6 +33,7 @@ pub struct PurseToken404Contract<M: Middleware + 'static> {
 }
 
 impl<M: Middleware + 'static> PurseToken404Contract<M> {
+    /// Create a new `PurseToken404Contract` instance
     pub fn new(address: Address, provider: Arc<M>) -> Self {
         let contract = PurseToken404::new(address, provider.clone());
         Self { address, contract, provider }
@@ -54,8 +55,8 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     /// 
     /// #Returns
     /// `Result<U256>` - A `U256` type
-    pub async fn balance_of(&self, addr: &Address) -> Result<U256> {
-        let res = self.contract.balance_of(*addr).call().await;
+    pub async fn balance_of(&self, addr: Address) -> Result<U256> {
+        let res = self.contract.balance_of(addr).call().await;
         match res {
             Ok(balance) => Ok(balance),
             Err(e) => Err(eyre::Report::from(e))
@@ -119,14 +120,21 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
             Arc::new(signer_middleware)
         );
 
+        println!("Test1");
         let tx = contract_with_signer.transfer(to, amount);
-        let pending = tx.send().await?;
-        let finalized = pending.await?;
+        println!("Test2");
+        let pending = tx.send().await;
+        match pending {
+            Ok(_) => println!("Pending"),
+            Err(e) => println!("Error: {}", e)
+        }
+        println!("Test3");
+        // let finalized = pending;
 
-        let json_str = serde_json::to_string(&finalized)?;
-        let json: Value = serde_json::from_str(&json_str)?;
+        // let json_str = serde_json::to_string(finalized)?;
+        // let json: Value = serde_json::from_str(&json_str)?;
 
-        println!("Transfer transaction receipt: {}", json_str);
+        // println!("Transfer transaction receipt: {}", json_str);
 
         Ok(())
     }
