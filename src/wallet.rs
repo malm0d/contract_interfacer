@@ -18,7 +18,6 @@ pub struct Wallet {
 
 /// Implementation (Methods) for Wallet
 impl Wallet {
-
     /// Create a new wallet from the given mnemonic phrase and derivation path number
     /// #Arguments
     /// * `phrase` - Mnemonic phrase
@@ -63,6 +62,7 @@ impl Wallet {
         Ok(wallets)
     }
 
+    /// Returns the address of the wallet: `Address`
     pub fn address(&self) -> Address {
         self.signer.address()
     }

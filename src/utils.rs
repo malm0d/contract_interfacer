@@ -1,3 +1,5 @@
+use core::panic;
+use serde_json::Value;
 use ethers::{
     providers::{Http, Provider},
     types::{Address, U256},
@@ -10,10 +12,12 @@ use ethers::{
 /// #Returns
 /// `Provider<Http>` - A new instance of `Provider<Http>`
 pub async fn get_provider(rpc_url: &str) -> eyre::Result<Provider<Http>> {
-    let provider = Provider::<Http>::try_from(rpc_url)?;
-    Ok(provider)
+    let provider = Provider::<Http>::try_from(rpc_url);
+    match provider {
+        Ok(prov) => Ok(prov),
+        Err(e) => Err(eyre::eyre!("Failed to get provider: {}", e))
+    }
 }
-
 
 /// Converts the given string slice to an `Address` (H160) type
 /// #Arguments
@@ -34,3 +38,60 @@ pub fn to_address_type(str_slice: &str) -> Address {
 pub fn to_u256(amount: u32) -> U256 {
     U256::from(amount)
 }
+
+/// Extracts the transaction hash from the transaction receipt JSON
+/// #Arguments
+/// * `receipt_json` - Transaction receipt JSON
+/// 
+/// #Returns
+/// `String` - Transaction hash
+pub fn get_tx_hash(receipt_json: &str) -> String {
+    let receipt: Value = serde_json::from_str(
+        &receipt_json
+    ).expect("Failed to parse receipt JSON");
+    if let Some(tx_hash) = receipt["transactionHash"].as_str() {
+        return tx_hash.to_string();
+    } else {
+        panic!("Failed to get transaction hash from receipt: Not found");
+    }
+}
+
+/// Extracts the gas used from the transaction receipt JSON
+/// #Arguments
+/// * `receipt_json` - Transaction receipt JSON
+/// 
+/// #Returns
+/// `String` - Gas used in decimal
+pub fn get_gas_used(receipt_json: &str) -> String {
+    let receipt: Value = serde_json::from_str(
+        &receipt_json
+    ).expect("Failed to parse receipt JSON");
+    if let Some(gas_used) = receipt["gasUsed"].as_str() {
+        let hexa = gas_used.trim_start_matches("0x");
+        let gas_used_val = i64::from_str_radix(hexa, 16).unwrap();
+        gas_used_val.to_string()
+    } else {
+        panic!("Failed to get gas used from receipt: Not found");
+    }
+}
+
+/// Extracts the gas price from the transaction receipt JSON
+/// #Arguments
+/// * `receipt_json` - Transaction receipt JSON
+/// 
+/// #Returns
+/// `String` - Gas price in gwei
+pub fn get_gas_price(receipt_json: &str) -> String {
+    let receipt: Value = serde_json::from_str(
+        &receipt_json
+    ).expect("Failed to parse receipt JSON");
+    if let Some(gas_price) = receipt["effectiveGasPrice"].as_str() {
+        let hexa = gas_price.trim_start_matches("0x");
+        let gas_px_wei = i64::from_str_radix(hexa, 16).unwrap();
+        let gas_px_gwei = gas_px_wei as f64 / 1_000_000_000.0;
+        gas_px_gwei.to_string()
+    } else {
+        panic!("Failed to get gas price from receipt: Not found");
+    }
+}
+

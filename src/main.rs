@@ -5,13 +5,13 @@ use contract_interfacer::{
     get_provider, to_address_type, to_u256
 };
 use dotenv::dotenv;
+use alloy::hex;
 
 #[tokio::main]
 async fn main() {
     dotenv().ok();
     let phrase = std::env::var("MNEMONIC").unwrap();
     let wallet = Wallet::from_phrase(phrase.as_str(), 0, 11155111).unwrap();
-    println!("{:?}", wallet);
 
     let prov = get_provider(
         std::env::var("SEPOLIA_RPC").unwrap().as_str()
@@ -21,24 +21,37 @@ async fn main() {
         to_address_type(PURSE_ETH_ADDRESS),
         prov
     );
-
-    println!("{:?}", purse_token);
     
     let contract_minted = purse_token.minted().await.unwrap();
     println!("{:?}", contract_minted);
 
-    let token_ids = purse_token.owned(wallet.address()).await.unwrap();
+    let token_ids = purse_token.owned(&wallet.address()).await.unwrap();
     println!("{:?}", token_ids);
 
-    let wallet_balance = purse_token.balance_of(wallet.address()).await.unwrap();
+    let wallet_balance = purse_token.balance_of(&wallet.address()).await.unwrap();
     println!("{:?}", wallet_balance);
 
-    let amount = to_u256(1);
-    let _ = purse_token.transfer(
-        wallet,
-        to_address_type("0x2027E055201E26b1bFE33Eb923b3fdb7E6f30807"),
-        amount
+    let mint_unit = to_u256(1);
+    let mint_to = wallet.address();
+    let res = purse_token.mint_erc721(
+        &mint_unit, 
+        &wallet
     ).await;
 
+    match res {
+        Ok(receipt) => {println!("ok")},
+        Err(e) => { println!("Error: {:?}", e) }
+    }
+
+    // let result = purse_token.transfer(
+    //     &wallet,
+    //     &to_address_type("0xdF7eD90AC34a1492fD0240ea385bab6872a96527"),
+    //     &amount
+    // ).await;
+
+    // match result {
+    //     Ok(receipt) => {println!("ok")},
+    //     Err(e) => { println!("Error: {:?}", e) }
+    // }
 
 }

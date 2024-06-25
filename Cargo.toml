@@ -13,4 +13,4 @@ serde_json = "1.0.117"
 ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "5394d899adca736a602e316e6f0c06fdb5aa64b9", features = [
     "ws",
 ] }
-alloy = { version = "0.1.2", features = ["full"] }
+alloy = { version = "0.1", features = ["full"] }
