@@ -48,7 +48,7 @@ impl Wallet {
     /// 
     /// #Returns
     /// `Vec<Self>` - A vector of `Wallet` instances
-    pub async fn generate_wallets(
+    pub fn generate_wallets(
         phrase: &str, 
         number_of_wallets: u64, 
         chain_id: u64

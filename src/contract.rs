@@ -9,7 +9,8 @@ use ethers::{
 use crate::utils::{
     get_tx_hash, 
     get_gas_price, 
-    get_gas_used
+    get_gas_used,
+    calc_tx_fee,
 };
 use crate::wallet::Wallet;
 
@@ -113,14 +114,14 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     /// * `amount` - a `U256` reference, the amount to transfer
     /// 
     /// #Returns
-    /// `Result<(String, String, String, String)>` - A tuple of transaction hash, 
-    /// gas price, gas used, and transaction receipt JSON
+    /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
+    /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn transfer(
         &self, 
         from: &Wallet, 
         to: &Address, 
         amount: &U256
-    ) -> Result<(String, String, String, String)> {
+    ) -> Result<(String, String, String, String, String)> {
         let signer_middleware = SignerMiddleware::new(
             self.provider.clone(),
             from.signer.clone()
@@ -133,7 +134,12 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
         let tx = contract_with_signer.transfer(*to, *amount);
         let pending_tx = match tx.send().await {
             Ok(pending_tx) => {
-                println!("Transaction sent, from: {}, to: {}, amount (wei): {} \n", from.address(), to, amount);
+                println!(
+                    "Transaction sent, from: {}, to: {}, amount (wei): {} \n", 
+                    from.address(), 
+                    to, 
+                    amount
+                );
                 println!("Waiting...");
                 pending_tx
             },
@@ -152,13 +158,15 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
         let tx_hash = get_tx_hash(&json_str);
         let gas_price = get_gas_price(&json_str);
         let gas_used = get_gas_used(&json_str);
+        let tx_fee = calc_tx_fee(&json_str);
         
         println!("Transaction hash: {}", tx_hash);
-        println!("Gas price: {}", gas_price);
+        println!("Gas price (gwei): {}", gas_price);
         println!("Gas used: {}", gas_used);
+        println!("Transaction fee (ETH): {}", tx_fee);
         println!("Transfer transaction receipt: {} \n", json_str);
 
-        Ok((tx_hash, gas_price, gas_used, json_str))
+        Ok((tx_hash, gas_price, gas_used, tx_fee, json_str))
     }
 
     /// Mint ERC721 token(s) to the given wallet.
@@ -167,13 +175,13 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     /// * `mint_to` - a `Wallet` reference, the wallet to mint the NFT to.
     /// 
     /// #Returns
-    /// `Result<(String, String, String, String)>` - A tuple of transaction hash, 
-    /// gas price, gas used, and transaction receipt JSON
+    /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
+    /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn mint_erc721(
         &self, 
         mint_unit: &U256, 
         mint_to: &Wallet
-    ) -> Result<(String, String, String, String)> {
+    ) -> Result<(String, String, String, String, String)> {
         let minting_cost = self.minting_cost().await?;
         let signer_middleware = SignerMiddleware::new(
             self.provider.clone(), 
@@ -211,13 +219,77 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
         let tx_hash = get_tx_hash(&json_str);
         let gas_price = get_gas_price(&json_str);
         let gas_used = get_gas_used(&json_str);
+        let tx_fee = calc_tx_fee(&json_str);
 
         println!("Transaction hash: {}", tx_hash);
-        println!("Gas price: {}", gas_price);
+        println!("Gas price (gwei): {}", gas_price);
         println!("Gas used: {}", gas_used);
+        println!("Transaction fee (ETH): {}", tx_fee);
         println!("Transfer transaction receipt: {} \n", json_str);
 
-        Ok((tx_hash, gas_price, gas_used, json_str))
+        Ok((tx_hash, gas_price, gas_used, tx_fee, json_str))
+    }
+
+    /// Mint ERC20 token(s) to an authorized address.
+    /// #Arguments
+    /// * `sender` - a `Wallet` reference, the msg.sender of the mint transaction.
+    /// * `to` - an `Address` reference, the address to mint the tokens to.
+    /// Note that if the wallet is not authorized, the transaction will fail.
+    /// * `amount` - a `U256` reference, the amount to mint
+    /// 
+    /// #Returns
+    /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
+    /// gas price, gas used, transaction fees, and transaction receipt JSON
+    pub async fn mint(
+        &self,
+        sender: &Wallet,
+        to: &Address,
+        amount: &U256
+    ) -> Result<(String, String, String, String, String)> {
+        let signer_middleware = SignerMiddleware::new(
+            self.provider.clone(), 
+            sender.signer.clone()
+        );
+        let contract_with_signer = PurseToken404::new(
+            self.address.clone(), 
+            Arc::new(signer_middleware)
+        );
+
+        let tx = contract_with_signer.mint(*to, *amount);
+        let pending_tx = match tx.send().await {
+            Ok(pending_tx) => {
+                println!(
+                    "Transaction sent, from: {}, to: {}, amount (wei): {} \n", 
+                    to, 
+                    self.address(), 
+                    amount
+                );
+                println!("Waiting...");
+                pending_tx
+            },
+            Err(e) => {
+                return Err(eyre::eyre!("Failed to send transaction: {}", e))
+            }
+        };
+        let receipt = match pending_tx.await {
+            Ok(receipt) => receipt,
+            Err(e) => {
+                return Err(eyre::eyre!("Unexpected error occurred: {}", e))
+            }
+        };
+        let json_str = serde_json::to_string(&receipt)?;
+        let tx_hash = get_tx_hash(&json_str);
+        let gas_price = get_gas_price(&json_str);
+        let gas_used = get_gas_used(&json_str);
+        let tx_fee = calc_tx_fee(&json_str);
+
+        println!("Transaction hash: {}", tx_hash);
+        println!("Gas price (gwei): {}", gas_price);
+        println!("Gas used: {}", gas_used);
+        println!("Transaction fee (ETH): {}", tx_fee);
+        println!("Transfer transaction receipt: {} \n", json_str);
+
+        Ok((tx_hash, gas_price, gas_used, tx_fee, json_str))
     }
 
     /// Maps "known" error signature to a human-readable string

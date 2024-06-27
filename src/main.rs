@@ -2,10 +2,9 @@ use contract_interfacer::{
     Wallet,
     PurseToken404Contract,
     PURSE_ETH_ADDRESS,
-    get_provider, to_address_type, to_u256
+    get_provider, to_address_type, to_u256, write_to_csv
 };
 use dotenv::dotenv;
-use alloy::hex;
 
 #[tokio::main]
 async fn main() {
@@ -21,27 +20,24 @@ async fn main() {
         to_address_type(PURSE_ETH_ADDRESS),
         prov
     );
-    
-    let contract_minted = purse_token.minted().await.unwrap();
-    println!("{:?}", contract_minted);
 
-    let token_ids = purse_token.owned(&wallet.address()).await.unwrap();
-    println!("{:?}", token_ids);
+    let owned_token_ids = purse_token.owned(&wallet.address()).await.unwrap();
+    println!("NFTs: {:?}", owned_token_ids);
 
-    let wallet_balance = purse_token.balance_of(&wallet.address()).await.unwrap();
-    println!("{:?}", wallet_balance);
+    // let wallet_balance = purse_token.balance_of(&wallet.address()).await.unwrap();
+    // println!("{:?}", wallet_balance);
 
-    let mint_unit = to_u256(1);
-    let mint_to = wallet.address();
-    let res = purse_token.mint_erc721(
-        &mint_unit, 
-        &wallet
-    ).await;
+    // let mint_unit = to_u256(1);
+    // let mint_to = wallet.address();
+    // let res = purse_token.mint_erc721(
+    //     &mint_unit, 
+    //     &wallet
+    // ).await;
 
-    match res {
-        Ok(receipt) => {println!("ok")},
-        Err(e) => { println!("Error: {:?}", e) }
-    }
+    // match res {
+    //     Ok(receipt) => {println!("ok")},
+    //     Err(e) => { println!("Error: {:?}", e) }
+    // }
 
     // let result = purse_token.transfer(
     //     &wallet,
