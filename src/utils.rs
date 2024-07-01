@@ -60,6 +60,12 @@ pub fn to_u256(amount: u128) -> U256 {
     U256::from(amount)
 }
 
+/// Converts the given string slice of a WEI value to an ETH value
+/// #Arguments
+/// * `wei` - WEI value as a string slice
+/// 
+/// #Returns
+/// `String` - ETH value as a string
 pub fn str_wei_to_eth(wei: &str) -> String {
     let wei_bd = BigDecimal::from_str(wei).expect("Invalid input str");
     let eth_per_wei_bd = BigDecimal::from_i64(1_000_000_000_000_000_000).unwrap();
