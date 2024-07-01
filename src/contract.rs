@@ -40,9 +40,12 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     /// 
     /// #Returns
     /// `Self` - A new `PurseToken404Contract` instance
-    pub fn new(address: Address, provider: Arc<M>) -> Self {
-        let contract = PurseToken404::new(address, provider.clone());
-        Self { address, contract, provider }
+    pub fn new(address: Address, provider: &Arc<M>) -> Self {
+        let contract = PurseToken404::new(
+            address, 
+            Arc::clone(provider)
+        );
+        Self { address, contract, provider: Arc::clone(provider) }
     }
 
     /// Returns the address of the contract: `Address`
