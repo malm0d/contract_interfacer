@@ -34,11 +34,11 @@ pub struct PurseToken404Contract<M: Middleware + 'static> {
 
 impl<M: Middleware + 'static> PurseToken404Contract<M> {
     /// Create a new `PurseToken404Contract` instance
-    /// #Arguments
+    /// ### Arguments
     /// * `address` - Address of the deployed contract
     /// * `provider` - Network Provider
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Self` - A new `PurseToken404Contract` instance
     pub fn new(address: Address, provider: &Arc<M>) -> Self {
         let contract = PurseToken404::new(
@@ -49,20 +49,24 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     }
 
     /// Returns the address of the contract: `Address`
+    /// ### Returns
+    /// `Address` - The address of the contract
     pub fn address(&self) -> Address {
         self.address
     }
 
     /// Returns an instance of the provider: `Arc<M>`
+    /// ### Returns
+    /// `Arc<M>` - An instance of the provider
     pub fn provider(&self) -> Arc<M> {
         self.provider.clone()
     }
 
     /// Gets the balance of the given address
-    /// #Arguments
+    /// ### Arguments
     /// * `addr` - Address
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Result<U256>` - A `U256` type
     pub async fn balance_of(&self, addr: &Address) -> Result<U256> {
         let res = self.contract.balance_of(*addr).call().await;
@@ -74,7 +78,7 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
 
     /// Gets the current minted NFT amount
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Result<U256>` - A `U256` type
     pub async fn minted(&self) -> Result<U256> {
         let res = self.contract.minted().call().await;
@@ -86,7 +90,7 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
 
     /// Gets the current minting cost to mint an NFT
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Result<U256>` - A `U256` type
     pub async fn minting_cost(&self) -> Result<U256> {
         let res = self.contract.minting_cost().call().await;
@@ -97,10 +101,10 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     }
 
     /// Retrieves all NFT token IDs owned by the given address
-    /// #Arguments
+    /// ### Arguments
     /// * `owner` - an `Address` reference
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Result<Vec<U256>>` - A vector of `U256` types
     pub async fn owned(&self, owner: &Address) -> Result<Vec<U256>> {
         let res = self.contract.owned(*owner).call().await;
@@ -111,12 +115,12 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     }
 
     /// Transfer the given amount (ERC20), from a `Wallet` to the given address.
-    /// #Arguments
+    /// ### Arguments
     /// * `from` - a `Wallet` reference, the sender of the transfer
     /// * `to` - an `Address` reference, the recipient of the transfer
     /// * `amount` - a `U256` reference, the amount to transfer
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
     /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn transfer(
@@ -173,11 +177,11 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     }
 
     /// Mint ERC721 token(s) to the given wallet.
-    /// #Arguments
+    /// ### Arguments
     /// * `mint_unit` - a `U256` reference, the amount to mint
     /// * `mint_to` - a `Wallet` reference, the wallet to mint the NFT to.
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
     /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn mint_erc721(
@@ -234,13 +238,13 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     }
 
     /// Mint ERC20 token(s) to an authorized address.
-    /// #Arguments
+    /// ### Arguments
     /// * `sender` - a `Wallet` reference, the msg.sender of the mint transaction.
     /// * `to` - an `Address` reference, the address to mint the tokens to.
     /// Note that if the wallet is not authorized, the transaction will fail.
     /// * `amount` - a `U256` reference, the amount to mint
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
     /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn mint(
@@ -296,10 +300,10 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
     }
 
     /// Maps "known" error signature to a human-readable string
-    /// #Arguments
+    /// ### Arguments
     /// * `error_sig` - Error signature, eg: "0x65c62bb3"
     /// 
-    /// #Returns
+    /// ### Returns
     /// `String` - A human-readable string,
     /// or the original error signature if it's not known.
     pub fn map_error_sig(&self, error_sig: &str) -> String {

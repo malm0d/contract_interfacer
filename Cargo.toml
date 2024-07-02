@@ -15,3 +15,4 @@ ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "5394d899adca736a
 ] }
 alloy = { version = "0.1", features = ["full"] }
 bigdecimal = "0.4.5"
+clap = { version = "4.5.8", features = ["derive"] }

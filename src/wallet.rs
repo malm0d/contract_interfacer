@@ -19,14 +19,14 @@ pub struct Wallet {
 /// Implementation (Methods) for Wallet
 impl Wallet {
     /// Create a new wallet from the given mnemonic phrase and derivation path number
-    /// #Arguments
+    /// ### Arguments
     /// * `phrase` - Mnemonic phrase
     /// * `derivation_path_number` - Derivation path number
     /// * `chain_id` - Chain ID
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Self` - A new `Wallet` instance
-    pub fn from_phrase(phrase: &str, derivation_path_number: u64, chain_id: u64) -> eyre::Result<Self> {
+    pub fn from_phrase(phrase: &str, derivation_path_number: u32, chain_id: u32) -> eyre::Result<Self> {
         let wallet_builder = MnemonicBuilder::<English>::default().phrase(phrase);
         let wallet = wallet_builder
             .derivation_path(
@@ -41,17 +41,17 @@ impl Wallet {
     }
 
     /// Generate wallets from the given number of wallets and chain ID
-    /// #Arguments
+    /// ### Arguments
     /// * `phrase` - Mnemonic phrase
     /// * `number_of_wallets` - Number of wallets to generate
     /// * `chain_id` - Chain ID
     /// 
-    /// #Returns
+    /// ### Returns
     /// `Vec<Self>` - A vector of `Wallet` instances
     pub fn generate_wallets(
         phrase: &str, 
-        number_of_wallets: u64, 
-        chain_id: u64
+        number_of_wallets: u32, 
+        chain_id: u32
     ) -> eyre::Result<Vec<Self>> {
         let mut wallets = Vec::new();
         for i in 0..=number_of_wallets {
