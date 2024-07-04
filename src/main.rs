@@ -13,6 +13,7 @@ use dotenv::dotenv;
 
 #[tokio::main]
 async fn main() {
+    // contract_interfacer::cli::run();
     dotenv().ok();
     
     let file_path = "test.csv";

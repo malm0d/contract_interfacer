@@ -3,55 +3,64 @@ use core::panic;
 use csv::{ WriterBuilder, ReaderBuilder };
 use std::{ fs::{File, OpenOptions}, path::Path, error::Error};
 use eyre::Result;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use ethers::types::{Address, U256};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Record {
     #[serde(rename = "Transaction Hash")]
-    transaction_hash: String,
+    pub transaction_hash: String,
     #[serde(rename = "Derivation")]
-    derivation: u32,
+    pub derivation: u32,
     #[serde(rename = "Sender")]
-    sender: String,
+    pub sender: String,
     #[serde(rename = "Sender Balance Before (ETH)")]
-    sender_balance_before_eth: f64,
+    pub sender_balance_before_eth: f64,
     #[serde(rename = "Sender Balance After (ETH)")]
-    sender_balance_after_eth: f64,
+    pub sender_balance_after_eth: f64,
     #[serde(rename = "Sender Balance Before (ERC20)")]
-    sender_balance_before_erc20: f64,
+    pub sender_balance_before_erc20: f64,
     #[serde(rename = "Sender Balance After (ERC20)")]
-    sender_balance_after_erc20: f64,
+    pub sender_balance_after_erc20: f64,
     #[serde(rename = "Recipient")]
-    recipient: String,
+    pub recipient: String,
     #[serde(rename = "Recipient Balance Before (ETH)")]
-    recipient_balance_before_eth: f64,
+    pub recipient_balance_before_eth: f64,
     #[serde(rename = "Recipient Balance After (ETH)")]
-    recipient_balance_after_eth: f64,
+    pub recipient_balance_after_eth: f64,
     #[serde(rename = "Recipient Balance Before (ERC20)")]
-    recipient_balance_before_erc20: f64,
+    pub recipient_balance_before_erc20: f64,
     #[serde(rename = "Recipient Balance After (ERC20)")]
-    recipient_balance_after_erc20: f64,
+    pub recipient_balance_after_erc20: f64,
     #[serde(rename = "Function")]
-    function: String,
+    pub function: String,
     #[serde(rename = "Msg Value")]
-    msg_value: f64,
+    pub msg_value: f64,
     #[serde(rename = "Calldata Value")]
-    calldata_value: f64,
+    pub calldata_value: f64,
     #[serde(rename = "Msg.sender Owned Token IDs")]
-    msg_sender_owned_token_ids: String,
+    pub msg_sender_owned_token_ids: String,
     #[serde(rename = "Tx Fee")]
-    tx_fee: f64,
+    pub tx_fee: f64,
     #[serde(rename = "Gas Price")]
-    gas_price: f64,
+    pub gas_price: f64,
     #[serde(rename = "Gas Used")]
-    gas_used: u64,
+    pub gas_used: u64,
     #[serde(rename = "Receipt JSON")]
-    receipt_json: String,
+    pub receipt_json: String,
 }
 
-pub fn read_from_csv(file_path: &str) -> Result<Vec<Record>, Box<dyn Error>> {
-    let file = File::open(file_path).expect("Failed to open file");
+/// Reads the data from a CSV file into a vector of `Record` structs.
+/// ### Arguments
+/// * `file_path` - File path
+/// 
+/// ### Returns
+/// `Result<Vec<Record>>` - Result
+pub fn read_from_csv(file_path: &str) -> Result<Vec<Record>> {
+    let file = match File::open(file_path) {
+        Ok(f) => f,
+        Err(_) => return Err(eyre::eyre!("Cannot open file, not found."))
+    };
     let mut reader = ReaderBuilder::new()
         .has_headers(true)
         .from_reader(file);

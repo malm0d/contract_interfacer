@@ -3,7 +3,7 @@ mod contract;
 mod constants;
 mod utils;
 mod file;
-mod cli;
+pub mod cli;
 
 pub use constants::*;
 pub use wallet::Wallet;
