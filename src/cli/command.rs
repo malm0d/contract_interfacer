@@ -32,15 +32,10 @@ impl CliCommand {
     /// Execute the command
     pub async fn execute(self) -> eyre::Result<()> {
         dotenv().ok();
+        let chain_id = self.cli_args.chain_id;
         let phrase = std::env::var("MNEMONIC").unwrap();
-        let call_function = self.cli_args.function;
-        let calldata = self.cli_args.calldata;
-        let _ = validate_purse_calldata(&call_function, &calldata);
-
-        let msg_value = self.cli_args.msg_value;
-        let file_path = self.cli_args.file_path;
-
         let mut derivation_num_arg = self.cli_args.derivation_number;
+        let file_path = self.cli_args.file_path;
 
         match read_from_csv(&file_path) {
             Ok(records) => {
@@ -67,21 +62,42 @@ impl CliCommand {
                     println!("Using provided derivation number: {} \n", derivation_num_arg);
                 }
             },
-            Err(e) => {
-                eprintln!("Error reading from CSV: {}", e);
+            Err(_e) => {
                 println!("Starting new file: {}", file_path);
                 println!("Defaulting derivation number to 0 for the current execution context \n");
             }
         }
+
+        let prov = match chain_id {
+            1 => get_provider(
+                std::env::var("MAINNET_RPC").unwrap().as_str()
+            ).await.unwrap(),
+            11155111 => get_provider(
+                std::env::var("SEPOLIA_RPC").unwrap().as_str()
+            ).await.unwrap(),
+            _ => {
+                Err(eyre::eyre!("Unsupported chain id: {}. Halting..", chain_id))?
+            }
+        };
 
         let wallet = Wallet::from_phrase(
             phrase.as_str(),
             derivation_num_arg,
             11155111
         ).unwrap();
+        let msg_sender_address = wallet.address();
+        let msg_value = self.cli_args.msg_value;
 
-        
-        
+        let call_function = self.cli_args.function;
+        let calldata = self.cli_args.calldata;
+        let _ = validate_purse_calldata(&call_function, &calldata);
+        let calldata_vec = calldata.unwrap_or_default();
+
+        let purse_token = PurseToken404Contract::new(
+            to_address_type(PURSE_ETH_ADDRESS),
+            &Arc::new(prov.clone()),
+        );
+
         Ok(())
     }
 }
