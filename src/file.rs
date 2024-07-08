@@ -1,7 +1,7 @@
 use crate::utils::str_wei_to_eth;
 use core::panic;
 use csv::{ WriterBuilder, ReaderBuilder };
-use std::{ fs::{File, OpenOptions}, path::Path, error::Error};
+use std::{ fs::{File, OpenOptions}, path::Path };
 use eyre::Result;
 use serde::{Deserialize, Serialize};
 use ethers::types::{Address, U256};

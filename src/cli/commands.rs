@@ -3,7 +3,7 @@ use std::sync::Arc;
 use clap::Parser;
 use eyre::Result;
 use ethers::types::U256;
-use super::{ args::CliArgs, validate::* };
+use super::{ args::ContractCliArgs, validate::* };
 use crate::{
     file::{
         Record, 
@@ -22,13 +22,13 @@ use crate::{
 };
 
 #[derive(Debug, Parser)]
-pub struct CliCommand {
+pub struct PurseCommand {
     /// All Cli args
     #[clap(flatten)]
-    cli_args: CliArgs,
+    cli_args: ContractCliArgs,
 }
 
-impl CliCommand {
+impl PurseCommand {
     /// Execute the command
     pub async fn execute(self) -> eyre::Result<()> {
         dotenv().ok();
@@ -97,7 +97,9 @@ impl CliCommand {
             to_address_type(PURSE_ETH_ADDRESS),
             &Arc::new(prov.clone()),
         );
-
+        println!("Wallet: {:?}", wallet);
+        println!("Wallet address: {}", msg_sender_address);
+        println!("Pursetoken: {:?}", purse_token);
         Ok(())
     }
 }

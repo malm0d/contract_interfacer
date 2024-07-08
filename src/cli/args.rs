@@ -3,7 +3,7 @@ use clap::Parser;
 use ethers::types::U256;
 
 #[derive(Debug, Clone, Parser, PartialEq)]
-pub struct CliArgs {
+pub struct ContractCliArgs {
     /// Derivation number
     #[clap(long, default_value_t = 0)]
     pub derivation_number: u32,
@@ -36,7 +36,7 @@ mod tests {
     #[test]
     fn test_cli_args() {
         let args = vec![
-            "cliargs",
+            "ContractCliArgs",
             "--derivation-number",
             "1",
             "--function",
@@ -51,7 +51,7 @@ mod tests {
             "test.csv",
         ];
         assert_eq!(
-            CliArgs {
+            ContractCliArgs {
                 derivation_number: 1,
                 function: "transfer".to_string(),
                 calldata: Some(vec![
@@ -63,14 +63,14 @@ mod tests {
                 chain_id: 1,
                 file_path: "test.csv".to_string(),
             },
-            CliArgs::try_parse_from(args).unwrap()
+            ContractCliArgs::try_parse_from(args).unwrap()
         );
     }
 
     #[test]
     fn test_cli_args_2() {
         let args = vec![
-            "cliargs",
+            "ContractCliArgs",
             "--derivation-number",
             "1",
             "--function",
@@ -85,7 +85,7 @@ mod tests {
             "test.csv",
         ];
         assert_eq!(
-            CliArgs {
+            ContractCliArgs {
                 derivation_number: 1,
                 function: "transfer".to_string(),
                 calldata: Some(vec![
@@ -97,14 +97,14 @@ mod tests {
                 chain_id: 11155111,
                 file_path: "test.csv".to_string(),
             },
-            CliArgs::try_parse_from(args).unwrap()
+            ContractCliArgs::try_parse_from(args).unwrap()
         );
     }
 
     #[test]
     fn test_cli_args_3() {
         let args = vec![
-            "cliargs",
+            "ContractCliArgs",
             "--function",
             "minted",
             "--chain-id",
@@ -113,7 +113,7 @@ mod tests {
             "test.csv",
         ];
         assert_eq!(
-            CliArgs {
+            ContractCliArgs {
                 derivation_number: 0,
                 function: "minted".to_string(),
                 calldata: None,
@@ -121,7 +121,7 @@ mod tests {
                 chain_id: 11155111,
                 file_path: "test.csv".to_string(),
             },
-            CliArgs::try_parse_from(args).unwrap()
+            ContractCliArgs::try_parse_from(args).unwrap()
         );
     }
 }
