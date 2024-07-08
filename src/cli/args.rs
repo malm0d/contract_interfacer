@@ -4,7 +4,7 @@ use ethers::types::U256;
 
 #[derive(Debug, Clone, Parser, PartialEq)]
 pub struct ContractCliArgs {
-    /// Derivation number
+    /// Hueristic Derivation number
     #[clap(long, default_value_t = 0)]
     pub derivation_number: u32,
     
