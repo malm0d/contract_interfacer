@@ -7,7 +7,7 @@ pub mod cli;
 
 pub use constants::*;
 pub use wallet::Wallet;
-pub use contract::PurseToken404Contract;
+pub use contract::*;
 pub use utils::*;
 pub use file::*;
 pub use cli::*;

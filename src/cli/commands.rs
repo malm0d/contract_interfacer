@@ -3,7 +3,7 @@ use std::sync::Arc;
 use clap::Parser;
 use eyre::Result;
 use ethers::types::U256;
-use super::{ args::ContractCliArgs, validate::* };
+use super::args::ContractCliArgs;
 use crate::{
     file::{
         Record, 
@@ -17,7 +17,14 @@ use crate::{
         get_native_balance,
     },
     wallet::Wallet,
-    contract::PurseToken404Contract,
+    contract::{
+        purse_contract::Purse404Contract,
+        purse_executor::{
+            validate_purse_calldata,
+            Purse404FunctionCall,
+            PurseExecutor,
+        },
+    },
     constants::PURSE_ETH_ADDRESS,
 };
 
@@ -93,13 +100,29 @@ impl PurseCommand {
         let _ = validate_purse_calldata(&call_function, &calldata);
         let calldata_vec = calldata.unwrap_or_default();
 
-        let purse_token = PurseToken404Contract::new(
+        let purse_token = Purse404Contract::new(
             to_address_type(PURSE_ETH_ADDRESS),
             &Arc::new(prov.clone()),
         );
-        println!("Wallet: {:?}", wallet);
-        println!("Wallet address: {}", msg_sender_address);
-        println!("Pursetoken: {:?}", purse_token);
+        
+
+        let function_call = Purse404FunctionCall::from_data(
+            &call_function, 
+            &msg_value, 
+            &calldata_vec, 
+            &wallet
+        );
+
+    // let sender_eth_bal_bef = get_native_balance(&prov, &msg_sender_address).await.unwrap();
+    // let sender_erc20_bal_bef = purse_token.balance_of(&msg_sender_address).await.unwrap();
+    // let recipient_eth_bal_bef = get_native_balance(&prov, &msg_recipient_address).await.unwrap();
+    // let recipient_erc20_bal_bef = purse_token.balance_of(&msg_recipient_address).await.unwrap();
+
+
+
+
+
+
         Ok(())
     }
 }

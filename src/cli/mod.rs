@@ -1,10 +1,8 @@
-use clap::{value_parser, Parser, Subcommand};
+use clap::{Parser, Subcommand};
 use std::panic;
-use crate::file::{write_to_csv, read_from_csv, Record};
 
 pub mod args;
 pub mod commands;
-pub mod validate;
 
 /// Main CLI interface
 #[derive(Debug, Parser)]

@@ -15,33 +15,33 @@ use crate::utils::{
 use crate::wallet::Wallet;
 
 abigen!(
-    PurseToken404,
+    Purse404,
     "abi/purseTokenAbi.json",
 );
 
-/// Wrapper around PurseToken404 contract
+/// Wrapper around Purse404 contract
 /// With traits `Clone` and `Debug`
 /// Fields:
 /// * `address` - Address in `Address` type
-/// * `contract` - PurseToken404 contract instance
+/// * `contract` - Purse404 contract instance
 /// * `provider` - Provider
 #[derive(Clone, Debug)]
-pub struct PurseToken404Contract<M: Middleware + 'static> {
+pub struct Purse404Contract<M: Middleware + 'static> {
     address: Address,
-    contract: PurseToken404<M>,
+    contract: Purse404<M>,
     provider: Arc<M>,
 }
 
-impl<M: Middleware + 'static> PurseToken404Contract<M> {
-    /// Create a new `PurseToken404Contract` instance
+impl<M: Middleware + 'static> Purse404Contract<M> {
+    /// Create a new `Purse404Contract` instance
     /// ### Arguments
     /// * `address` - Address of the deployed contract
     /// * `provider` - Network Provider
     /// 
     /// ### Returns
-    /// `Self` - A new `PurseToken404Contract` instance
+    /// `Self` - A new `Purse404Contract` instance
     pub fn new(address: Address, provider: &Arc<M>) -> Self {
-        let contract = PurseToken404::new(
+        let contract = Purse404::new(
             address, 
             Arc::clone(provider)
         );
@@ -133,7 +133,7 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
             self.provider.clone(),
             from.signer.clone()
         );
-        let contract_with_signer = PurseToken404::new(
+        let contract_with_signer = Purse404::new(
             self.address.clone(),
             Arc::new(signer_middleware)
         );
@@ -178,28 +178,29 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
 
     /// Mint ERC721 token(s) to the given wallet.
     /// ### Arguments
-    /// * `mint_unit` - a `U256` reference, the amount to mint
-    /// * `mint_to` - a `Wallet` reference, the wallet to mint the NFT to.
+    /// * `mint_to` - a `Wallet` reference, the sender of the transaction
+    /// * `mint_unit` - a `U256` reference, the amount to mint (treated as integer)
+    /// * `msg_value` - a `U256` reference, the msg value to send with the transaction
     /// 
     /// ### Returns
     /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
     /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn mint_erc721(
-        &self, 
-        mint_unit: &U256, 
-        mint_to: &Wallet
+        &self,
+        mint_to: &Wallet, 
+        mint_unit: &U256,
+        msg_value: &U256 
     ) -> Result<(String, String, String, String, String)> {
-        let minting_cost = self.minting_cost().await?;
         let signer_middleware = SignerMiddleware::new(
             self.provider.clone(), 
             mint_to.signer.clone()
         );
-        let contract_with_signer = PurseToken404::new(
+        let contract_with_signer = Purse404::new(
             self.address.clone(), 
             Arc::new(signer_middleware)
         );
 
-        let tx = contract_with_signer.mint_erc721(*mint_unit).value(minting_cost);
+        let tx = contract_with_signer.mint_erc721(*mint_unit).value(*msg_value);
         let pending_tx = match tx.send().await {
             Ok(pending_tx) => {
                 println!(
@@ -257,7 +258,7 @@ impl<M: Middleware + 'static> PurseToken404Contract<M> {
             self.provider.clone(), 
             sender.signer.clone()
         );
-        let contract_with_signer = PurseToken404::new(
+        let contract_with_signer = Purse404::new(
             self.address.clone(), 
             Arc::new(signer_middleware)
         );
