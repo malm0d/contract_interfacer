@@ -181,10 +181,8 @@ impl PurseCommand {
                     Some(calldata_value),
                     Some(msg_sender_owned_token_ids)
                 );
-            
             }
         }
-
 
         Ok(())
     }
