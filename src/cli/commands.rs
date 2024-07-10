@@ -36,6 +36,8 @@ pub struct PurseCommand {
 impl PurseCommand {
     /// Execute the command
     pub async fn execute(self) -> eyre::Result<()> {
+        println!("> Executing Purse command \n");
+
         dotenv().ok();
         let cid = self.cli_args.chain_id;
         let phrase = std::env::var("MNEMONIC")?;
@@ -50,26 +52,27 @@ impl PurseCommand {
                     .collect();
 
                 if derivation_numbers.len() == 0 {
-                    eprintln!("An existing file must have at least one record with a derivation number.");
-                    return Err(eyre::eyre!("No recorded derivation numbers found in: {}. Halting..", file_path))
+                    eprintln!("> An existing file must have at least one record with a derivation number.");
+                    return Err(eyre::eyre!("> No recorded derivation numbers found in: {}. Halting...", file_path))
                 }
 
                 derivation_numbers.sort();
                 let highest = *derivation_numbers.last().unwrap();
-                println!("Recorded derivation numbers: {:?} \n", derivation_numbers);
-                println!("Highest derivation number last used: {:?} \n", highest);
+                println!("> Recorded derivation numbers: {:?} \n", derivation_numbers);
+                println!("> Highest derivation number last used: {:?} \n", highest);
 
                 // If `derivation_number_arg` is 0 (default), use the next highest number
                 if derivation_num_arg == 0 {
                     derivation_num_arg = highest + 1;
-                    println!("Using next derivation number: {} \n", derivation_num_arg);
+                    println!("> Using next derivation number: {} \n", derivation_num_arg);
                 } else {
-                    println!("Using provided derivation number: {} \n", derivation_num_arg);
+                    println!("> Using provided derivation number: {} \n", derivation_num_arg);
                 }
             },
             Err(_e) => {
-                println!("Starting new file: {}", file_path);
-                println!("Defaulting derivation number to 0 for the current execution context \n");
+                println!("> Starting new file: \"{}\" ", file_path);
+                println!("> File will only be created if a write transaction is executed and completed successfully \n");
+                println!("> Defaulting derivation number to 0 for the current execution context \n");
             }
         }
 
@@ -81,7 +84,7 @@ impl PurseCommand {
                 std::env::var("SEPOLIA_RPC").unwrap().as_str()
             ).await?,
             _ => {
-                return Err(eyre::eyre!("Unsupported chain id: {}. Halting..", cid))
+                return Err(eyre::eyre!("Unsupported chain id: {}. Halting...", cid))
             }
         };
 
@@ -127,23 +130,23 @@ impl PurseCommand {
         
         match tx_result {
             Purse404Results::Address(addr) => {
-                println!("Purse404 contract address: {}", addr);
+                println!("> Purse404 contract address: {:?}", addr);
             },
             Purse404Results::U256Result(res) => {
-                println!("Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
-                println!("Result: {}", res);
+                println!("> Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
+                println!("> Result: {}", res);
             },
             Purse404Results::U256VecResult(res) => {
-                println!("Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
-                println!("Result: {:?}", res);
+                println!("> Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
+                println!("> Result: {:?}", res);
             },
             Purse404Results::StringResult(res) => {
-                println!("Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
-                println!("Result: {}", res);
+                println!("> Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
+                println!("> Result: {}", res);
             },
             Purse404Results::StringVecResult(res) => {
-                println!("Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
-                println!("Result: {:?}", res);
+                println!("> Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
+                println!("> Result: {:?}", res);
             },
             Purse404Results::StateChangeResult((
                 tx_hash,
