@@ -126,7 +126,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     pub async fn transfer(
         &self, 
         from: &Wallet, 
-        to: &Address, 
+        to_address: &Address, 
         amount: &U256
     ) -> Result<(String, String, String, String, String)> {
         let signer_middleware = SignerMiddleware::new(
@@ -138,13 +138,13 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
             Arc::new(signer_middleware)
         );
 
-        let tx = contract_with_signer.transfer(*to, *amount);
+        let tx = contract_with_signer.transfer(*to_address, *amount);
         let pending_tx = match tx.send().await {
             Ok(pending_tx) => {
                 println!(
                     "Transaction sent, from: {}, to: {}, amount (wei): {} \n", 
                     from.address(), 
-                    to, 
+                    to_address, 
                     amount
                 );
                 println!("Waiting...");
@@ -180,7 +180,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// ### Arguments
     /// * `mint_to` - a `Wallet` reference, the sender of the transaction
     /// * `mint_unit` - a `U256` reference, the amount to mint (treated as integer)
-    /// * `msg_value` - a `U256` reference, the msg value to send with the transaction
+    /// * `message_value` - a `U256` reference, the msg value to send with the transaction
     /// 
     /// ### Returns
     /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
@@ -188,8 +188,8 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     pub async fn mint_erc721(
         &self,
         mint_to: &Wallet, 
-        mint_unit: &U256,
-        msg_value: &U256 
+        mint_units: &U256,
+        message_value: &U256 
     ) -> Result<(String, String, String, String, String)> {
         let signer_middleware = SignerMiddleware::new(
             self.provider.clone(), 
@@ -200,14 +200,14 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
             Arc::new(signer_middleware)
         );
 
-        let tx = contract_with_signer.mint_erc721(*mint_unit).value(*msg_value);
+        let tx = contract_with_signer.mint_erc721(*mint_units).value(*message_value);
         let pending_tx = match tx.send().await {
             Ok(pending_tx) => {
                 println!(
                     "Transaction sent, from: {}, to: {}, amount (nfts): {} \n", 
                     mint_to.address(), 
                     self.address(), 
-                    mint_unit
+                    mint_units
                 );
                 println!("Waiting...");
                 pending_tx
@@ -241,7 +241,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// Mint ERC20 token(s) to an authorized address.
     /// ### Arguments
     /// * `sender` - a `Wallet` reference, the msg.sender of the mint transaction.
-    /// * `to` - an `Address` reference, the address to mint the tokens to.
+    /// * `to_address` - an `Address` reference, the address to mint the tokens to.
     /// Note that if the wallet is not authorized, the transaction will fail.
     /// * `amount` - a `U256` reference, the amount to mint
     /// 
@@ -251,7 +251,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     pub async fn mint(
         &self,
         sender: &Wallet,
-        to: &Address,
+        to_address: &Address,
         amount: &U256
     ) -> Result<(String, String, String, String, String)> {
         let signer_middleware = SignerMiddleware::new(
@@ -263,12 +263,12 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
             Arc::new(signer_middleware)
         );
 
-        let tx = contract_with_signer.mint(*to, *amount);
+        let tx = contract_with_signer.mint(*to_address, *amount);
         let pending_tx = match tx.send().await {
             Ok(pending_tx) => {
                 println!(
                     "Transaction sent, from: {}, to: {}, amount (wei): {} \n", 
-                    to, 
+                    to_address, 
                     self.address(), 
                     amount
                 );

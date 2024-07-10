@@ -95,15 +95,15 @@ pub fn read_from_csv(file_path: &str) -> Result<Vec<Record>> {
 /// * `call_function` - Contract function called
 /// * `derivation_number` - Derivation number of the address
 /// * `msg_sender` - Message sender
-/// * `sender_eth_bal_bef` - Sender balance, before (native)
-/// * `sender_eth_bal_aft` - Sender balance, after (native)
-/// * `sender_erc20_bal_bef` - Sender balance, before (ERC20)
-/// * `sender_erc20_bal_aft` - Sender balance, after (ERC20)
+/// * `sender_eth_balance_bef` - Sender balance, before (native)
+/// * `sender_eth_balance_aft` - Sender balance, after (native)
+/// * `sender_erc20_balance_bef` - Sender balance, before (ERC20)
+/// * `sender_erc20_balance_aft` - Sender balance, after (ERC20)
 /// * `msg_recipient` - Message recipient
-/// * `recipient_eth_bal_bef` - Recipient balance, before (native)
-/// * `recipient_eth_bal_aft` - Recipient balance, after (native)
-/// * `recipient_erc20_bal_bef` - Recipient balance, before (ERC20)
-/// * `recipient_erc20_bal_aft` - Recipient balance, after (ERC20)
+/// * `recipient_eth_balance_bef` - Recipient balance, before (native)
+/// * `recipient_eth_balance_aft` - Recipient balance, after (native)
+/// * `recipient_erc20_balance_bef` - Recipient balance, before (ERC20)
+/// * `recipient_erc20_balance_aft` - Recipient balance, after (ERC20)
 /// * `msg_value` - Message value (optional)
 /// * `calldata_value` - Calldata value (optional)
 /// * `msg_sender_owned_token_ids` - Msg.sender Owned token IDs (optional)
@@ -118,17 +118,17 @@ pub fn write_to_csv(
     tx_fee: &str,
     receipt_json_str: &str,
     call_function: &str,
-    derivation_number: &u32,
-    msg_sender: &Address,
-    sender_eth_bal_bef: Option<U256>,
-    sender_eth_bal_aft: Option<U256>,
-    sender_erc20_bal_bef: Option<U256>,
-    sender_erc20_bal_aft: Option<U256>,
-    msg_recipient: &Address,
-    recipient_eth_bal_bef: Option<U256>,
-    recipient_eth_bal_aft: Option<U256>,
-    recipient_erc20_bal_bef: Option<U256>,
-    recipient_erc20_bal_aft: Option<U256>,
+    derivation_number: u32,
+    msg_sender: Address,
+    sender_eth_balance_bef: Option<U256>,
+    sender_eth_balance_aft: Option<U256>,
+    sender_erc20_balance_bef: Option<U256>,
+    sender_erc20_balance_aft: Option<U256>,
+    msg_recipient: Address,
+    recipient_eth_balance_bef: Option<U256>,
+    recipient_eth_balance_aft: Option<U256>,
+    recipient_erc20_balance_bef: Option<U256>,
+    recipient_erc20_balance_aft: Option<U256>,
     msg_value: Option<U256>,
     calldata_value: Option<U256>,
     msg_sender_owned_token_ids: Option<Vec<U256>>,
@@ -180,15 +180,15 @@ pub fn write_to_csv(
 
     let default_u256 = U256::from(0);
 
-    let sender_eth_bal_bef = sender_eth_bal_bef.unwrap_or_else(|| default_u256);
-    let sender_eth_bal_aft = sender_eth_bal_aft.unwrap_or_else(|| default_u256);
-    let sender_erc20_bal_bef = sender_erc20_bal_bef.unwrap_or_else(|| default_u256);
-    let sender_erc20_bal_aft = sender_erc20_bal_aft.unwrap_or_else(|| default_u256);
+    let sender_eth_balance_bef = sender_eth_balance_bef.unwrap_or_else(|| default_u256);
+    let sender_eth_balance_aft = sender_eth_balance_aft.unwrap_or_else(|| default_u256);
+    let sender_erc20_balance_bef = sender_erc20_balance_bef.unwrap_or_else(|| default_u256);
+    let sender_erc20_balance_aft = sender_erc20_balance_aft.unwrap_or_else(|| default_u256);
 
-    let recipient_eth_bal_bef = recipient_eth_bal_bef.unwrap_or_else(|| default_u256);
-    let recipient_eth_bal_aft = recipient_eth_bal_aft.unwrap_or_else(|| default_u256);
-    let recipient_erc20_bal_bef = recipient_erc20_bal_bef.unwrap_or_else(|| default_u256);
-    let recipient_erc20_bal_aft = recipient_erc20_bal_aft.unwrap_or_else(|| default_u256);
+    let recipient_eth_balance_bef = recipient_eth_balance_bef.unwrap_or_else(|| default_u256);
+    let recipient_eth_balance_aft = recipient_eth_balance_aft.unwrap_or_else(|| default_u256);
+    let recipient_erc20_balance_bef = recipient_erc20_balance_bef.unwrap_or_else(|| default_u256);
+    let recipient_erc20_balance_aft = recipient_erc20_balance_aft.unwrap_or_else(|| default_u256);
 
     let msg_value = msg_value.unwrap_or_else(|| default_u256);
     let calldata_value = calldata_value.unwrap_or_else(|| default_u256);
@@ -204,15 +204,15 @@ pub fn write_to_csv(
         tx_hash,
         derivation_number.to_string().as_str(),
         msg_sender.to_string().as_str(),
-        str_wei_to_eth(&sender_eth_bal_bef.to_string()).as_str(),
-        str_wei_to_eth(&sender_eth_bal_aft.to_string()).as_str(),
-        str_wei_to_eth(&sender_erc20_bal_bef.to_string()).as_str(),
-        str_wei_to_eth(&sender_erc20_bal_aft.to_string()).as_str(),
+        str_wei_to_eth(&sender_eth_balance_bef.to_string()).as_str(),
+        str_wei_to_eth(&sender_eth_balance_aft.to_string()).as_str(),
+        str_wei_to_eth(&sender_erc20_balance_bef.to_string()).as_str(),
+        str_wei_to_eth(&sender_erc20_balance_aft.to_string()).as_str(),
         msg_recipient.to_string().as_str(),
-        str_wei_to_eth(&recipient_eth_bal_bef.to_string()).as_str(),
-        str_wei_to_eth(&recipient_eth_bal_aft.to_string()).as_str(),
-        str_wei_to_eth(&recipient_erc20_bal_bef.to_string()).as_str(),
-        str_wei_to_eth(&recipient_erc20_bal_aft.to_string()).as_str(),
+        str_wei_to_eth(&recipient_eth_balance_bef.to_string()).as_str(),
+        str_wei_to_eth(&recipient_eth_balance_aft.to_string()).as_str(),
+        str_wei_to_eth(&recipient_erc20_balance_bef.to_string()).as_str(),
+        str_wei_to_eth(&recipient_erc20_balance_aft.to_string()).as_str(),
         call_function,
         str_wei_to_eth(&msg_value.to_string()).as_str(),
         str_wei_to_eth(&calldata_value.to_string()).as_str(),
