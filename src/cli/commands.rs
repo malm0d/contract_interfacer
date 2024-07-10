@@ -41,7 +41,7 @@ impl PurseCommand {
         dotenv().ok();
         let cid = self.cli_args.chain_id;
         let phrase = std::env::var("MNEMONIC")?;
-        let mut derivation_num_arg = self.cli_args.derivation_number;
+        let mut derivation_num_set = 0; //default to 0
         let file_path = self.cli_args.file_path;
 
         match read_from_csv(&file_path) {
@@ -61,18 +61,24 @@ impl PurseCommand {
                 println!("> Recorded derivation numbers: {:?} \n", derivation_numbers);
                 println!("> Highest derivation number last used: {:?} \n", highest);
 
-                // If `derivation_number_arg` is 0 (default), use the next highest number
-                if derivation_num_arg == 0 {
-                    derivation_num_arg = highest + 1;
-                    println!("> Using next derivation number: {} \n", derivation_num_arg);
-                } else {
-                    println!("> Using provided derivation number: {} \n", derivation_num_arg);
+                let derivation_num_arg = self.cli_args.derivation_number;
+                match derivation_num_arg {
+                    Some(num) => {
+                        // If `derivation_number_arg` is provided, use it
+                        derivation_num_set = num;
+                        println!("> Using the provided derivation number: {} \n", derivation_num_set);
+                    },
+                    None => {
+                        // If None, use the next highest number
+                        derivation_num_set = highest + 1;
+                        println!("> Using next derivation number: {} \n", derivation_num_set);
+                    }
                 }
             },
             Err(_e) => {
                 println!("> Starting new file: \"{}\" ", file_path);
-                println!("> File will only be created if a write transaction is executed and completed successfully \n");
-                println!("> Defaulting derivation number to 0 for the current execution context \n");
+                println!("> File will only be created if a write transaction is executed and completed successfully");
+                println!("> Defaulting derivation number to {} for the current execution context \n", derivation_num_set);
             }
         }
 
@@ -90,7 +96,7 @@ impl PurseCommand {
 
         let wallet = Wallet::from_phrase(
             phrase.as_str(),
-            derivation_num_arg,
+            derivation_num_set,
             cid
         ).unwrap();
         let msg_sender_address = wallet.address();
@@ -133,19 +139,19 @@ impl PurseCommand {
                 println!("> Purse404 contract address: {:?}", addr);
             },
             Purse404Results::U256Result(res) => {
-                println!("> Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
+                println!("> Function call: {} \n> Calldata: {}", call_fn, cdata_vec.join(", "));
                 println!("> Result: {}", res);
             },
             Purse404Results::U256VecResult(res) => {
-                println!("> Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
+                println!("> Function call: {} \n> Calldata: {}", call_fn, cdata_vec.join(", "));
                 println!("> Result: {:?}", res);
             },
             Purse404Results::StringResult(res) => {
-                println!("> Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
+                println!("> Function call: {} \n> Calldata: {}", call_fn, cdata_vec.join(", "));
                 println!("> Result: {}", res);
             },
             Purse404Results::StringVecResult(res) => {
-                println!("> Function call: {} \n Calldata: {}", call_fn, cdata_vec.join(", "));
+                println!("> Function call: {} \n> Calldata: {}", call_fn, cdata_vec.join(", "));
                 println!("> Result: {:?}", res);
             },
             Purse404Results::StateChangeResult((
@@ -169,7 +175,7 @@ impl PurseCommand {
                     &tx_fees,
                     &tx_receipt_json,
                     &call_fn,
-                    derivation_num_arg,
+                    derivation_num_set,
                     msg_sender_address,
                     Some(sender_eth_bal_bef),
                     Some(sender_eth_bal_aft),

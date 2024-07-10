@@ -5,8 +5,8 @@ use ethers::types::U256;
 #[derive(Debug, Clone, Parser, PartialEq)]
 pub struct ContractCliArgs {
     /// Hueristic Derivation number
-    #[clap(long, default_value_t = 0)]
-    pub derivation_number: u32,
+    #[clap(long)]
+    pub derivation_number: Option<u32>,
     
     /// Contract function to execute
     #[clap(long, required = true)]
@@ -39,6 +39,7 @@ mod tests {
             "ContractCliArgs",
             "--derivation-number",
             "1",
+            "--enforce",
             "--function",
             "transfer",
             "--calldata",
@@ -52,7 +53,7 @@ mod tests {
         ];
         assert_eq!(
             ContractCliArgs {
-                derivation_number: 1,
+                derivation_number: Some(1),
                 function: "transfer".to_string(),
                 calldata: Some(vec![
                     "999888777".to_string(),
@@ -86,7 +87,7 @@ mod tests {
         ];
         assert_eq!(
             ContractCliArgs {
-                derivation_number: 1,
+                derivation_number: Some(1),
                 function: "transfer".to_string(),
                 calldata: Some(vec![
                     "999888777".to_string(),
@@ -114,7 +115,7 @@ mod tests {
         ];
         assert_eq!(
             ContractCliArgs {
-                derivation_number: 0,
+                derivation_number: None,
                 function: "minted".to_string(),
                 calldata: None,
                 msg_value: U256::from_dec_str("0").unwrap(),

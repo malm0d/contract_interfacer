@@ -34,9 +34,9 @@ pub struct Record {
     pub recipient_balance_after_erc20: f64,
     #[serde(rename = "Function")]
     pub function: String,
-    #[serde(rename = "Msg Value")]
+    #[serde(rename = "Msg Value (Raw)")]
     pub msg_value: f64,
-    #[serde(rename = "Calldata Value")]
+    #[serde(rename = "Calldata Value (Raw)")]
     pub calldata_value: f64,
     #[serde(rename = "Msg.sender Owned Token IDs")]
     pub msg_sender_owned_token_ids: String,
@@ -79,11 +79,14 @@ pub fn read_from_csv(file_path: &str) -> Result<Vec<Record>> {
 /// The order of the columns is as follows: Transaction Hash, Derivation, Sender, Sender Balance Before (ETH),
 /// Sender Balance After (ETH), Sender Balance Before (ERC20), Sender Balance After (ERC20), Recipient, 
 /// Recipient Balance Before (ETH), Recipient Balance After (ETH), Recipient Balance Before (ERC20),
-/// Recipient Balance After (ERC20), Function, Msg Value, Calldata Value, Msg.sender Owned Token IDs,
+/// Recipient Balance After (ERC20), Function, Msg Value (Raw), Calldata Value (Raw), Msg.sender Owned Token IDs,
 /// Tx Fee, Gas Price, Gas Used, Receipt JSON.
 /// 
 /// Additionally, if the file already exists, but the headers do not match the expected headers,
 /// either in length, or content order, the program will panic.
+/// 
+/// #### Note
+/// The Msg value and Calldata value are recorded as is, without any conversions. 
 /// 
 /// ### Arguments
 /// * `file_path` - File path
@@ -146,7 +149,7 @@ pub fn write_to_csv(
         "Recipient", 
         "Recipient Balance Before (ETH)", "Recipient Balance After (ETH)",
         "Recipient Balance Before (ERC20)", "Recipient Balance After (ERC20)",
-        "Function", "Msg Value", "Calldata Value", "Msg.sender Owned Token IDs", 
+        "Function", "Msg Value (Raw)", "Calldata Value (Raw)", "Msg.sender Owned Token IDs", 
         "Tx Fee", "Gas Price", "Gas Used", "Receipt JSON"
     ];
 
@@ -214,8 +217,8 @@ pub fn write_to_csv(
         str_wei_to_eth(&recipient_erc20_balance_bef.to_string()).as_str(),
         str_wei_to_eth(&recipient_erc20_balance_aft.to_string()).as_str(),
         call_function,
-        str_wei_to_eth(&msg_value.to_string()).as_str(),
-        str_wei_to_eth(&calldata_value.to_string()).as_str(),
+        msg_value.to_string().as_str(),
+        calldata_value.to_string().as_str(),
         msg_sender_owned_token_ids.as_str(),
         tx_fee,
         gas_price,
@@ -224,7 +227,7 @@ pub fn write_to_csv(
     ]).expect("Failed to write record");
 
     writer.flush().expect("Failed to flush writer");
-    println!("Transaction hash: {}, from address: {}, added to file: {}", tx_hash, msg_sender, file_path);
+    println!("Transaction hash: {}, from address: {:?}, added to file: {}", tx_hash, msg_sender, file_path);
 
     Ok(())
 }

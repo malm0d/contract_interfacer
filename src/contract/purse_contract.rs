@@ -142,7 +142,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
         let pending_tx = match tx.send().await {
             Ok(pending_tx) => {
                 println!(
-                    "Transaction sent, from: {}, to: {}, amount (wei): {} \n", 
+                    "Transaction sent, from: {:?}, to: {:?}, amount (wei): {} \n", 
                     from.address(), 
                     to_address, 
                     amount
