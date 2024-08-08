@@ -55,7 +55,7 @@ pub struct Record {
 /// * `file_path` - File path
 /// 
 /// ### Returns
-/// `Result<Vec<Record>>` - Result
+/// * `Result<Vec<Record>>` - Result
 pub fn read_from_csv(file_path: &str) -> Result<Vec<Record>> {
     let file = match File::open(file_path) {
         Ok(f) => f,
@@ -112,7 +112,7 @@ pub fn read_from_csv(file_path: &str) -> Result<Vec<Record>> {
 /// * `msg_sender_owned_token_ids` - Msg.sender Owned token IDs (optional)
 /// 
 /// ### Returns
-/// `Result<(), Box<dyn std::error::Error>>` - Result
+/// * `Result<(), Box<dyn std::error::Error>>` - Result
 pub fn write_to_csv(
     file_path: &str,
     tx_hash: &str,

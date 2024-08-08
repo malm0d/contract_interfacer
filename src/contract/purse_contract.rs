@@ -39,7 +39,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// * `provider` - Network Provider
     /// 
     /// ### Returns
-    /// `Self` - A new `Purse404Contract` instance
+    /// * `Self` - A new `Purse404Contract` instance
     pub fn new(address: Address, provider: &Arc<M>) -> Self {
         let contract = Purse404::new(
             address, 
@@ -50,14 +50,14 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
 
     /// Returns the address of the contract: `Address`
     /// ### Returns
-    /// `Address` - The address of the contract
+    /// * `Address` - The address of the contract
     pub fn address(&self) -> Address {
         self.address
     }
 
     /// Returns an instance of the provider: `Arc<M>`
     /// ### Returns
-    /// `Arc<M>` - An instance of the provider
+    /// * `Arc<M>` - An instance of the provider
     pub fn provider(&self) -> Arc<M> {
         self.provider.clone()
     }
@@ -67,7 +67,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// * `addr` - Address
     /// 
     /// ### Returns
-    /// `Result<U256>` - A `U256` type
+    /// * `Result<U256>` - A `U256` type
     pub async fn balance_of(&self, addr: &Address) -> Result<U256> {
         let res = self.contract.balance_of(*addr).call().await;
         match res {
@@ -79,7 +79,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// Gets the current minted NFT amount
     /// 
     /// ### Returns
-    /// `Result<U256>` - A `U256` type
+    /// * `Result<U256>` - A `U256` type
     pub async fn minted(&self) -> Result<U256> {
         let res = self.contract.minted().call().await;
         match res {
@@ -91,7 +91,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// Gets the current minting cost to mint an NFT
     /// 
     /// ### Returns
-    /// `Result<U256>` - A `U256` type
+    /// * `Result<U256>` - A `U256` type
     pub async fn minting_cost(&self) -> Result<U256> {
         let res = self.contract.minting_cost().call().await;
         match res {
@@ -105,7 +105,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// * `owner` - an `Address` reference
     /// 
     /// ### Returns
-    /// `Result<Vec<U256>>` - A vector of `U256` types
+    /// * `Result<Vec<U256>>` - A vector of `U256` types
     pub async fn owned(&self, owner: &Address) -> Result<Vec<U256>> {
         let res = self.contract.owned(*owner).call().await;
         match res {
@@ -121,7 +121,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// * `amount` - a `U256` reference, the amount to transfer
     /// 
     /// ### Returns
-    /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
+    /// * `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
     /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn transfer(
         &self, 
@@ -183,7 +183,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// * `message_value` - a `U256` reference, the msg value to send with the transaction
     /// 
     /// ### Returns
-    /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
+    /// * `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
     /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn mint_erc721(
         &self,
@@ -246,7 +246,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// * `amount` - a `U256` reference, the amount to mint
     /// 
     /// ### Returns
-    /// `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
+    /// * `Result<(String, String, String, String, String)>` - A tuple of transaction hash, 
     /// gas price, gas used, transaction fees, and transaction receipt JSON
     pub async fn mint(
         &self,
@@ -305,7 +305,7 @@ impl<M: Middleware + 'static> Purse404Contract<M> {
     /// * `error_sig` - Error signature, eg: "0x65c62bb3"
     /// 
     /// ### Returns
-    /// `String` - A human-readable string,
+    /// * `String` - A human-readable string,
     /// or the original error signature if it's not known.
     pub fn map_error_sig(&self, error_sig: &str) -> String {
         match error_sig {

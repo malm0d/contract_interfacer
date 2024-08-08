@@ -25,7 +25,7 @@ impl Wallet {
     /// * `chain_id` - Chain ID
     /// 
     /// ### Returns
-    /// `Self` - A new `Wallet` instance
+    /// * `Self` - A new `Wallet` instance
     pub fn from_phrase(phrase: &str, derivation_path_number: u32, chain_id: u32) -> eyre::Result<Self> {
         let wallet_builder = MnemonicBuilder::<English>::default().phrase(phrase);
         let wallet = wallet_builder
@@ -47,7 +47,7 @@ impl Wallet {
     /// * `chain_id` - Chain ID
     /// 
     /// ### Returns
-    /// `Vec<Self>` - A vector of `Wallet` instances
+    /// * `Vec<Self>` - A vector of `Wallet` instances
     pub fn generate_wallets(
         phrase: &str, 
         number_of_wallets: u32, 

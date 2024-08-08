@@ -19,7 +19,7 @@ use crate::{
 /// A vector that looks like this: `vec!["".to_string()]` will still have a length of 1.
 /// 
 /// ### Returns
-/// `Result<()>` - Result indicating success or failure
+/// * `Result<()>` - Result indicating success or failure
 pub fn validate_purse_calldata(func: &str, calldata: &Option<Vec<String>>) -> eyre::Result<()> {
     match (func, calldata) {
         // View functions do not have/require calldata so expect `None`
@@ -47,7 +47,7 @@ pub fn validate_purse_calldata(func: &str, calldata: &Option<Vec<String>>) -> ey
 /// * `calldata` - Calldata
 ///
 /// ### Returns
-/// `(Option<String>, ... )` tuple containing up to seven `Option<String>` values
+/// * `(Option<String>, ... )` tuple containing up to seven `Option<String>` values
 pub fn destruct_purse_calldata(
     func: &str,
     calldata: &Vec<String>
@@ -77,7 +77,7 @@ pub fn destruct_purse_calldata(
 /// * `calldata` - Calldata
 /// 
 /// ### Returns
-/// `(Address, U256)` - A tuple containing the recipient address and calldata value for
+/// * `(Address, U256)` - A tuple containing the recipient address and calldata value for
 /// the single transfer or mint related function
 pub fn transfer_or_mint_recipient_n_calldata(
     func: &str,
@@ -128,7 +128,7 @@ impl Purse404FunctionCall {
     /// * `wallet` - Wallet
     /// 
     /// ### Returns
-    /// `Result<Self>` - Result
+    /// * `Result<Self>` - Result
     pub fn from_data(
         function: &str,
         message_value: &U256, 
@@ -185,7 +185,7 @@ impl Purse404Executor {
     /// * `call` - Function call
     /// 
     /// ### Returns
-    /// `Purse404Results` - Results
+    /// * `Purse404Results` - Results
     pub async fn execute_fn<M: Middleware + 'static>(
         contract: &Purse404Contract<M>,
         call: Purse404FunctionCall,

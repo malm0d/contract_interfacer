@@ -14,7 +14,7 @@ use bigdecimal::{BigDecimal, FromPrimitive};
 /// * `rpc_url` - RPC URL
 /// 
 /// ### Returns
-/// `Provider<Http>` - A new instance of `Provider<Http>`
+/// * `Provider<Http>` - A new instance of `Provider<Http>`
 pub async fn get_provider(rpc_url: &str) -> eyre::Result<Provider<Http>> {
     let provider = Provider::<Http>::try_from(rpc_url);
     match provider {
@@ -30,7 +30,7 @@ pub async fn get_provider(rpc_url: &str) -> eyre::Result<Provider<Http>> {
 /// * `address` - Address
 /// 
 /// ### Returns
-/// `Result<U256>` - Result
+/// * `Result<U256>` - Result
 pub async fn get_native_balance(prov: &Provider<Http>, address: &Address) -> Result<U256> {
     let balance = prov.clone().get_balance(*address, None).await;
     match balance {
@@ -54,7 +54,7 @@ pub fn to_address_type(str_slice: &str) -> Address {
 /// * `amount` - Amount
 /// 
 /// #Returns
-/// `U256` - An instance of `U256`
+/// * `U256` - An instance of `U256`
 pub fn to_u256(amount: u128) -> U256 {
     U256::from(amount)
 }
@@ -64,7 +64,7 @@ pub fn to_u256(amount: u128) -> U256 {
 /// * `s` - String slice of the amount to parse
 /// 
 /// ### Returns
-/// `Result<U256, String>` - Result
+/// * `Result<U256, String>` - Result
 pub fn parse_u256(s: &str) -> Result<U256, String> {
     U256::from_str_radix(s, 10).map_err(|_| format!("String {s} is not a valid U256"))
 }
@@ -74,7 +74,7 @@ pub fn parse_u256(s: &str) -> Result<U256, String> {
 /// * `wei` - WEI value as a string slice
 /// 
 /// ### Returns
-/// `String` - ETH value as a string
+/// * `String` - ETH value as a string
 pub fn str_wei_to_eth(wei: &str) -> String {
     let wei_bd = BigDecimal::from_str(wei).expect("Invalid input str");
     let eth_per_wei_bd = BigDecimal::from_i64(1_000_000_000_000_000_000).unwrap();
@@ -87,7 +87,7 @@ pub fn str_wei_to_eth(wei: &str) -> String {
 /// * `receipt_json` - Transaction receipt JSON
 /// 
 /// ### Returns
-/// `String` - Transaction hash
+/// * `String` - Transaction hash
 pub fn get_tx_hash(receipt_json: &str) -> String {
     let receipt: Value = serde_json::from_str(
         &receipt_json
@@ -104,7 +104,7 @@ pub fn get_tx_hash(receipt_json: &str) -> String {
 /// * `receipt_json` - Transaction receipt JSON
 /// 
 /// ### Returns
-/// `String` - Gas used in decimal
+/// * `String` - Gas used in decimal
 pub fn get_gas_used(receipt_json: &str) -> String {
     let receipt: Value = serde_json::from_str(
         &receipt_json
@@ -123,7 +123,7 @@ pub fn get_gas_used(receipt_json: &str) -> String {
 /// * `receipt_json` - Transaction receipt JSON
 /// 
 /// ### Returns
-/// `String` - Gas price in gwei
+/// * `String` - Gas price in gwei
 pub fn get_gas_price(receipt_json: &str) -> String {
     let receipt: Value = serde_json::from_str(
         &receipt_json
@@ -144,7 +144,7 @@ pub fn get_gas_price(receipt_json: &str) -> String {
 /// * `receipt_json` - Transaction receipt JSON
 /// 
 /// ### Returns
-/// `String` - Transaction fee in ETH
+/// * `String` - Transaction fee in ETH
 pub fn calc_tx_fee(receipt_json: &str) -> String {
     let receipt: Value = serde_json::from_str(
         &receipt_json
